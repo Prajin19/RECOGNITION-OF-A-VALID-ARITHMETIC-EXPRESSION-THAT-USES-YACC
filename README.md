@@ -21,45 +21,36 @@ To write a yacc program to recognize a valid arithmetic expression that uses ope
 #### arth.l
 ```l
 %{
+#include "y.tab.h"
 #include <stdio.h>
-#include <stdlib.h>
-
-void yyerror(char *s);
-int yylex();
 %}
 
-%token ID PLUS MINUS MULTIPLICATION DIVISION
-
 %%
 
-statement:
-      ID '=' E
-      {
-          printf("\nValid arithmetic expression\n");
-      }
-      ;
+"="     { printf("\n Operator is EQUAL"); return '='; }
 
-E:
-      E PLUS ID
-    | E MINUS ID
-    | E MULTIPLICATION ID
-    | E DIVISION ID
-    | ID
-    ;
+"+"     { printf("\n Operator is PLUS"); return PLUS; }
 
-%%
+"-"     { printf("\n Operator is MINUS"); return MINUS; }
 
-extern FILE *yyin;
+"/"     { printf("\n Operator is DIVISION"); return DIVISION; }
 
-int main()
-{
-    yyparse();
-    return 0;
+"*"     { printf("\n Operator is MULTIPLICATION"); return MULTIPLICATION; }
+
+[a-zA-Z][a-zA-Z0-9]* {
+    printf("\n Identifier is %s", yytext);
+    return ID;
 }
 
-void yyerror(char *s)
+\n      { return 0; }
+
+.       { return yytext[0]; }
+
+%%
+
+int yywrap()
 {
-    fprintf(stderr, "Error: %s\n", s);
+    return 1;
 }
 ```
 #### arth.y
